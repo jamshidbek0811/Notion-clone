@@ -3,7 +3,7 @@ import { PricingCard } from "./"
 
 export const Pricing = () => {
   return (
-    <div className='max-w-7xl mx-auto container'>
+    <div className='max-w-7xl mx-auto container max-md:px-2'>
 			<h1 className='text-2xl sm:text-3xl md:text-4xl font-bold max-w-2xl'>
 				One tool for your whole company. Free for teams to try.
 			</h1>

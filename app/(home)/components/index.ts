@@ -4,5 +4,6 @@ import { Heroes } from "./heroes";
 import { Clients } from "./clients"
 import { Pricing } from "./pricing";
 import { PricingCard } from "./pricing-card";
+import { Footer } from "./footer";
 
-export { Navbar, Logo, PricingCard, Pricing, Heroes, Clients }
+export { Navbar, Footer, Logo, PricingCard, Pricing, Heroes, Clients }
