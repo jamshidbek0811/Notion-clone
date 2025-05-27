@@ -3,18 +3,17 @@ import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
 import { useUser } from "@clerk/clerk-react"
 import { useMutation } from "convex/react"
-import { ChevronDown, ChevronLeft, MoreHorizontal, Plus, Trash } from "lucide-react"
+import { ChevronDown, ChevronRight, MoreHorizontal, Plus, Trash } from "lucide-react"
 
 interface ItemProps {
     id?: Id<"documents">
     label: string
     level: number
     expended: boolean
-    onExpanded: void
+    onExpanded: () => void
 }
 
 export const Item = ({ id, label, level, onExpanded, expended }: ItemProps) => {
-
     const { user } = useUser()
     const createDocument = useMutation(api.document.createDocument)
 
@@ -24,7 +23,16 @@ export const Item = ({ id, label, level, onExpanded, expended }: ItemProps) => {
         if(!id){
             return
         }
-        createDocument({ title: "Title", parentDocument: id })
+        createDocument({ title: "Untitled", parentDocument: id }).then((document) => {
+            if(!expended){
+                onExpanded()
+            }
+        })
+    }
+
+    const handleExan = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.stopPropagation()
+        onExpanded()
     }
   return (
     <div style={{paddingLeft: level ? `${level * 12 + 12}px` : ""}} className="group min-h-[27px] text-sm py-1 pr-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground font-medium">
@@ -32,9 +40,13 @@ export const Item = ({ id, label, level, onExpanded, expended }: ItemProps) => {
             <div
                 className="h-full rounded-sm cursor-pointer hover:bg-neutral-300 dark:hover:bg-neutral-600 mr-1"
                 role="button"
+                onClick={handleExan}
             >
-                <ChevronDown className="h-6 w-6 shrink-0 text-muted-foreground/50" />
-                {/* <ChevronDown /> */}
+                {expended ? (
+                    <ChevronDown className="h-6 w-6 shrink-0 text-muted-foreground/50" />
+                ) : (
+                    <ChevronRight className="h-6 w-6 shrink-0 text-muted-foreground/50" />
+                )}
             </div>
         )}
         <span className="truncate">{label}</span>
