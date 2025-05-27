@@ -1,19 +1,25 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
+import { cn } from "@/lib/utils"
 import { useUser } from "@clerk/clerk-react"
 import { useMutation } from "convex/react"
-import { ChevronDown, ChevronRight, MoreHorizontal, Plus, Trash } from "lucide-react"
+import { ChevronDown, ChevronRight, LucideIcon, MoreHorizontal, Plus, Trash } from "lucide-react"
 
 interface ItemProps {
     id?: Id<"documents">
-    label: string
-    level: number
-    expended: boolean
-    onExpanded: () => void
+    label?: string
+    level?: number
+    expended?: boolean
+    active?: boolean
+    icon?: LucideIcon
+    documentIcon?: string
+    onExpanded?: () => void
+    onClick?: () => void
 }
 
-export const Item = ({ id, label, level, onExpanded, expended }: ItemProps) => {
+export const Item = ({ id, label, level, onExpanded, icon: Icon, expended, onClick, active, documentIcon }: ItemProps) => {
     const { user } = useUser()
     const createDocument = useMutation(api.document.createDocument)
 
@@ -25,17 +31,18 @@ export const Item = ({ id, label, level, onExpanded, expended }: ItemProps) => {
         }
         createDocument({ title: "Untitled", parentDocument: id }).then((document) => {
             if(!expended){
-                onExpanded()
+                onExpanded?.()
             }
         })
     }
 
     const handleExan = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.stopPropagation()
-        onExpanded()
+        onExpanded?.()
     }
+
   return (
-    <div style={{paddingLeft: level ? `${level * 12 + 12}px` : ""}} className="group min-h-[27px] text-sm py-1 pr-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground font-medium">
+    <div onClick={onClick} style={{paddingLeft: level ? `${level * 12 + 12}px` : ""}} role="button" className={cn("group min-h-[27px] cursor-pointer text-sm p-1 pr-3 w-full hover:bg-primary/5 flex items-center text-muted-foreground font-medium", active && "bg-primary/5 text-primary")}>
         {!!id && (
             <div
                 className="h-full rounded-sm cursor-pointer hover:bg-neutral-300 dark:hover:bg-neutral-600 mr-1"
@@ -49,6 +56,13 @@ export const Item = ({ id, label, level, onExpanded, expended }: ItemProps) => {
                 )}
             </div>
         )}
+
+        {documentIcon ? (
+            <div className="shrink-0 mr-2 text-[18px]">{documentIcon}</div>
+        ) : Icon && (
+            <Icon className="shrink-0 h-[18px] w-[18px] mr-2 text-muted-foreground" />
+        )}
+
         <span className="truncate">{label}</span>
 
          {!!id && (
@@ -76,6 +90,7 @@ export const Item = ({ id, label, level, onExpanded, expended }: ItemProps) => {
                 <div className="text-xs text-muted-foreground p-2">
                     Last edited by {user?.fullName}
                 </div>
+                <p>50 776 07 66</p>
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -90,4 +105,13 @@ export const Item = ({ id, label, level, onExpanded, expended }: ItemProps) => {
       )}
     </div>
   )
+}
+
+Item.Skeleton = function ItemSkeleton({ level }: { level?: number }){
+    return (
+        <div style={{paddingLeft: level ? `${level * 12 + 12}px` : ""}} className="flex gap-x-2 py-[3px]">
+            <Skeleton className="h-4 w-4"/>
+            <Skeleton className="h-4 w-[30%]"/>
+        </div>
+    )
 }
