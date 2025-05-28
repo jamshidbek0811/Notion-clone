@@ -12,9 +12,13 @@ import { UserBox } from "./user-box"
 import { Progress } from "@/components/ui/progress"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import TrashBox from "./trash-box"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 export const Sidebar = () => {
+    const router = useRouter()
     const isMobile = useMediaQuery("(max-width: 700px)")
+
     const createDocument = useMutation(api.document.createDocument)
 
     const sideBarRef = useRef<ElementRef<"div">>(null)
@@ -84,7 +88,12 @@ export const Sidebar = () => {
     }
 
     const onCreateDocument = () => {
-        createDocument({ title: "Untitle" })
+        const promise = createDocument({ title: "Untitle" }).then(res => router.push(`/documents/${res}`))
+        toast.promise(promise, {
+            loading: "Creating a new document..",
+            success: "Created succes document!",
+            error: "Failed to create new document!"
+        })
     }
 
     const arr = [1]

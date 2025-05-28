@@ -6,14 +6,23 @@ import { useUser } from "@clerk/clerk-react"
 import { useMutation } from "convex/react"
 import { Plus } from "lucide-react"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 const Documents = () => {
   const { user } = useUser()
+  const router = useRouter()
   const createDocument = useMutation(api.document.createDocument)
   
   const onCreateDocument = () => {
-    createDocument({
+    const promise = createDocument({
       title: "Untitle"
+    }).then(res => router.push(`/documents/${res}`))
+
+    toast.promise(promise, {
+      loading: "Creating a new blank..",
+      success: "Created succes blank!",
+      error: "Failed to create new blank!"
     })
   }
   return (

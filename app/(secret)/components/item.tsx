@@ -6,6 +6,9 @@ import { cn } from "@/lib/utils"
 import { useUser } from "@clerk/clerk-react"
 import { useMutation } from "convex/react"
 import { ChevronDown, ChevronRight, LucideIcon, MoreHorizontal, Plus, Trash } from "lucide-react"
+import { useRouter } from "next/navigation"
+import React from "react"
+import { toast } from "sonner"
 
 interface ItemProps {
     id?: Id<"documents">
@@ -21,6 +24,8 @@ interface ItemProps {
 
 export const Item = ({ id, label, level, onExpanded, icon: Icon, expended, onClick, active, documentIcon }: ItemProps) => {
     const { user } = useUser()
+    const router = useRouter()
+    const archive = useMutation(api.document.archive)
     const createDocument = useMutation(api.document.createDocument)
 
     const onCreateDocument = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -39,6 +44,18 @@ export const Item = ({ id, label, level, onExpanded, icon: Icon, expended, onCli
     const handleExan = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         event.stopPropagation()
         onExpanded?.()
+    }
+
+    const onArchive = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event.stopPropagation()
+        if(!id) return
+
+        const promise = archive({id}).then(res => router.push(`/documents`))
+        toast.promise(promise, {
+            loading: "Moving to trash...",
+            success: "Note moved to trash!",
+            error: "Failed to archive note!"
+        })
     }
 
   return (
@@ -77,12 +94,12 @@ export const Item = ({ id, label, level, onExpanded, icon: Icon, expended, onCli
                 </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                className="w-60"
-                align="start"
-                side="right"
-                forceMount
+                    className="w-60"
+                    align="start"
+                    side="right"
+                    forceMount
                 >
-                <DropdownMenuItem >
+                <DropdownMenuItem onClick={onArchive}>
                     <Trash className="h-6 w-6" />
                     Delete
                 </DropdownMenuItem>
@@ -90,7 +107,7 @@ export const Item = ({ id, label, level, onExpanded, icon: Icon, expended, onCli
                 <div className="text-xs text-muted-foreground p-2">
                     Last edited by {user?.fullName}
                 </div>
-                <p>50 776 07 66</p>
+                {/* <p>50 776 07 66</p> */}
                 </DropdownMenuContent>
             </DropdownMenu>
 
