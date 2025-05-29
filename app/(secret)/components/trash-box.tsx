@@ -13,6 +13,7 @@ const TrashBox = () => {
   const router = useRouter()
   const params = useParams()
 
+  const restore = useMutation(api.document.restore)
   const remove = useMutation(api.document.remove)
   const documents = useQuery(api.document.getTrashDocument)
   const [search, setSearch] = useState("")
@@ -33,6 +34,15 @@ const TrashBox = () => {
       router.push(`/documents`)
     }
   }
+
+  const onRestore = (documentId: Id<"documents">) => {
+        const promise = restore({ id: documentId })
+        toast.promise(promise, {
+            loading: "Restoring document...",
+            success: "Restored document...",
+            error: "Failed to restore document"
+        })
+    }
 
   if(documents === undefined){
     return (
@@ -58,7 +68,7 @@ const TrashBox = () => {
               <div key={document._id} onClick={() => router.push(`/documents/${document._id}`)} className="text-sm rounded-sm w-full hover:bg-primary/5 flex items-center cursor-pointer text-primary justify-between" role="button">
                 <span className="truncate pl-2">{document.title}</span>
                 <div className="flex items-center">
-                  <div className="rounded-sm p-2 m-1 hover:bg-neutral-200 dark:bg-neutral-600" role="button">
+                  <div className="rounded-sm p-2 m-1 hover:bg-neutral-200 dark:bg-neutral-600" role="button" onClick={() => onRestore(document._id)}>
                     <Undo className="h-4 w-4 text-muted-foreground" />
                   </div>
 

@@ -13,11 +13,13 @@ import { Progress } from "@/components/ui/progress"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import TrashBox from "./trash-box"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
+import { Navbar } from "./navbar"
 
 export const Sidebar = () => {
     const router = useRouter()
     const isMobile = useMediaQuery("(max-width: 700px)")
+    const params = useParams()
 
     const createDocument = useMutation(api.document.createDocument)
 
@@ -141,11 +143,15 @@ export const Sidebar = () => {
         </div>
 
         <div className={cn("absolute top-0 z-50 left-72 w-[calc(100% - 288px)]", isResseting && "transition-all ease-in duration-400", isMobile && "w-full left-0")} ref={navbarRef}>
-            <nav className="bg-transparent px-3 py-2 w-full">
-                {isCollapsed && (
-                    <MenuIcon className="h-8 w-8 text-muted-foreground cursor-pointer" role="button" onClick={reset}/>
-                )}
-            </nav>
+            {!!params.documentId ? (
+                <Navbar isCollapsed={isCollapsed} reset={reset}/>
+            ) : (
+                <nav className="bg-transparent px-3 py-2 w-full">
+                    {isCollapsed && (
+                        <MenuIcon className="h-8 w-8 text-muted-foreground cursor-pointer" role="button" onClick={reset}/>
+                    )}
+                </nav>
+            )}
         </div>
     </>
   )

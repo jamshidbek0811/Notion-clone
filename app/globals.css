@@ -2,7 +2,9 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-
+#__next::after {
+  display: none !important;
+}
 ::-webkit-scrollbar{
   width: 4px;
   height: 4px;

@@ -13,7 +13,7 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
   const { documentId } = use(params)
 
   return (
-    <div>{documentId}</div>
+    <div></div>
   )
 }
 
