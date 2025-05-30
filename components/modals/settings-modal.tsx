@@ -18,7 +18,18 @@ import { Loader } from "../ui/loader";
 
 const SettingsModal = () => {
     const settings = useSetting()
-    const { isOpen, onClose, onOpen } = settings
+    const { isOpen, onClose, onOpen, onToggle } = settings
+
+     useEffect(() => {
+      const down = (e: KeyboardEvent) => {
+        if (e.key === "j" && (e.metaKey || e.ctrlKey)) {
+          e.preventDefault();
+          onToggle()
+        }
+      }    
+      document.addEventListener("keydown", down);
+      return () => document.removeEventListener("keydown", down);
+    }, [onToggle])
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
