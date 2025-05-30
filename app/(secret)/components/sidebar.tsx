@@ -15,11 +15,15 @@ import TrashBox from "./trash-box"
 import { toast } from "sonner"
 import { useParams, useRouter } from "next/navigation"
 import { Navbar } from "./navbar"
+import { useSearch } from "@/hooks/use-search"
+import { useSetting } from "@/hooks/use-setting"
 
 export const Sidebar = () => {
     const router = useRouter()
     const isMobile = useMediaQuery("(max-width: 700px)")
     const params = useParams()
+    const search = useSearch()
+    const settings = useSetting()
 
     const createDocument = useMutation(api.document.createDocument)
 
@@ -108,8 +112,8 @@ export const Sidebar = () => {
 
             <div className="py-2 px-0 flex flex-col gap-1">
                 <UserBox />
-                <Item label="Search" icon={Search}/>
-                <Item label="Settings" icon={Settings}/>
+                <Item label="Search" icon={Search} isSearch onClick={() => search.onOpen()}/>
+                <Item label="Settings" icon={Settings} onClick={() => settings.onOpen()}/>
                 <Item label="New Document" icon={Plus} onClick={onCreateDocument}/>
             </div>
             <div className="mt-4">
