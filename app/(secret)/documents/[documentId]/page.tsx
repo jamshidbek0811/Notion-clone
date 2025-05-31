@@ -17,8 +17,8 @@ interface DocumentIdPageProps {
 
 const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
   const { documentId } = use(params)
-  const updateFileds = useMutation(api.document.UpdateField)
   const document = useQuery(api.document.getDocumentById, {id: documentId as Id<"documents">}) 
+  const updateFileds = useMutation(api.document.UpdateField)
 
   const Editor = useMemo(() => dynamic(() => import("@/components/shared/editor"), { ssr: false }), [])
   
@@ -43,7 +43,7 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
 
   return (
     <div className="pb-40 mt-12">
-      <Cover url={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUPIfiGgUML8G3ZqsNLHfaCnZK3I5g4tJabQ&s"}/>
+      <Cover url={document.coverImage}/>
 
        <div className="md:max-w-3xl lg:max-w-4xl mx-auto">
           <Toolbar document={document} />

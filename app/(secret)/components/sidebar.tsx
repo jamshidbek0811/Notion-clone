@@ -105,7 +105,7 @@ export const Sidebar = () => {
     const arr = [1]
   return (
     <>
-        <div ref={sideBarRef} className={cn("h-screen group bg-secondary overflow-y-auto relative flex w-72 flex-col z-50", isResseting && "transition-all ease-in duration-300", isMobile && "w-0")}>
+        <div ref={sideBarRef} className={cn("h-screen group bg-secondary overflow-y-auto flex w-72 flex-col sticky top-0 z-50", isResseting && "transition-all ease-in duration-300", isMobile && "w-0")}>
             <div role="button" className={cn("md:h-8 h-6 md:w-8 w-6 text-muted-foreground rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600 absolute top-3 right-2 cursor-pointer opacity-0 group-hover:opacity-100 transition", isMobile && "opacity-100")} onClick={collapse}>
                 <ChevronsLeft className="md:h-8 h-6 md:w-8 w-6"/>
             </div>

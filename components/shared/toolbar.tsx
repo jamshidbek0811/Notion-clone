@@ -6,6 +6,7 @@ import { useMutation } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import TextAreaAutosize from "react-textarea-autosize"
 import { ElementRef, useRef, useState } from "react"
+import { useCoverImage } from "@/hooks/use-cover-image"
 
 interface ToolbarProps {
     document: Doc<"documents">
@@ -15,6 +16,7 @@ interface ToolbarProps {
 const Toolbar = ({ document, preview }: ToolbarProps) => {
     const textareaRef = useRef<ElementRef<"textarea">>(null)
     const updateFileds = useMutation(api.document.UpdateField)
+    const coverImage = useCoverImage()
 
     const [value, setValue] = useState(document.title)
     const [isEditing, setIsEditing] = useState(false)
@@ -97,6 +99,7 @@ const Toolbar = ({ document, preview }: ToolbarProps) => {
                     size={"sm"}
                     variant={"outline"}
                     className="text-muted-foreground text-xs"
+                    onClick={() => coverImage.onOpen()}
                 >
                     <ImageIcon className="h-4 w-4 mr-2" />
                     <span>Add cover</span>

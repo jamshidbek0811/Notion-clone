@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { EdgeStoreProvider } from '@/lib/edgestore';
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
 import ConvexProvider from "@/components/providers/convex-provider";
@@ -32,17 +33,19 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ConvexProvider>
-          <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-              storageKey="theme"
-            >
-              <Toaster position="top-center" />
-              {children} 
-              <ModalProvider />
-          </ThemeProvider>
+          <EdgeStoreProvider>
+            <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                disableTransitionOnChange
+                storageKey="theme"
+              >
+                <Toaster position="top-center" />
+                <ModalProvider />
+                {children} 
+            </ThemeProvider>
+          </EdgeStoreProvider>
         </ConvexProvider>
       </body>
     </html>
