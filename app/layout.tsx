@@ -40,8 +40,8 @@ export default function RootLayout({
               storageKey="theme"
             >
               <Toaster position="top-center" />
-              <ModalProvider />
               {children} 
+              <ModalProvider />
           </ThemeProvider>
         </ConvexProvider>
       </body>
