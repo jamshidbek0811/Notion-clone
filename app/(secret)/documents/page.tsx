@@ -1,9 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { Loader } from "@/components/ui/loader"
 import { api } from "@/convex/_generated/api"
+import useSubscription from "@/hooks/use-subscription"
 import { useUser } from "@clerk/clerk-react"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { Plus } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -13,8 +15,15 @@ const Documents = () => {
   const { user } = useUser()
   const router = useRouter()
   const createDocument = useMutation(api.document.createDocument)
+  const documents = useQuery(api.document.getAllDocuments)
+  const { isLoading, data } = useSubscription(user?.emailAddresses[0].emailAddress!)
+  
   
   const onCreateDocument = () => {
+    if(documents?.length && documents.length >= 3 && data === "Free"){
+        toast.error("You can already create 3 documents in the free plan! Please delete one documents this note!")
+        return
+    }
     const promise = createDocument({
       title: "Untitle"
     }).then(res => router.push(`/documents/${res}`))
@@ -33,9 +42,13 @@ const Documents = () => {
       <h2 className="text-lg font-bold">
         Welcome to {user?.firstName}'s document page
       </h2>
-      <Button onClick={onCreateDocument}>
-        <Plus className="h-4 w-4"/>
-        Create a blank
+      <Button onClick={onCreateDocument} disabled={isLoading}>
+        {isLoading ? <><Loader/> <span>Loading...</span></> :(
+          <>
+            <Plus className="h-4 w-4"/>
+            "Create a blank"
+          </>
+        )}
       </Button>
     </div>
   )

@@ -3,6 +3,8 @@ import { Input } from "@/components/ui/input"
 import { Loader } from "@/components/ui/loader"
 import { api } from "@/convex/_generated/api"
 import { Id } from "@/convex/_generated/dataModel"
+import useSubscription from "@/hooks/use-subscription"
+import { useUser } from "@clerk/clerk-react"
 import { useMutation, useQuery } from "convex/react"
 import { Search, Trash, Undo } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
@@ -12,9 +14,12 @@ import { toast } from "sonner"
 const TrashBox = () => {
   const router = useRouter()
   const params = useParams()
+  const { user } = useUser()
 
   const restore = useMutation(api.document.restore)
   const remove = useMutation(api.document.remove)
+  const alldocuments = useQuery(api.document.getAllDocuments)
+  const { isLoading, data } = useSubscription(user?.emailAddresses[0].emailAddress!)
   const documents = useQuery(api.document.getTrashDocument)
   const [search, setSearch] = useState("")
 
@@ -36,13 +41,17 @@ const TrashBox = () => {
   }
 
   const onRestore = (documentId: Id<"documents">) => {
-        const promise = restore({ id: documentId })
-        toast.promise(promise, {
-            loading: "Restoring document...",
-            success: "Restored document...",
-            error: "Failed to restore document"
-        })
+    if(alldocuments?.length && alldocuments.length >= 3 && data === "Free"){
+        toast.error("You can already create 3 documents in the free plan")
+        return
     }
+    const promise = restore({ id: documentId })
+    toast.promise(promise, {
+        loading: "Restoring document...",
+        success: "Restored document...",
+        error: "Failed to restore document"
+    })
+  }
 
   if(documents === undefined){
     return (

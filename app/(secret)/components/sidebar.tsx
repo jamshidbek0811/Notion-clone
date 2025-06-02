@@ -6,7 +6,7 @@ import React, { ElementRef, useEffect, useRef, useState } from "react"
 import { useMediaQuery } from "usehooks-ts"
 import { DocumentList } from "./document-list"
 import { Item } from "./item"
-import { useMutation } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
 import { UserBox } from "./user-box"
 import { Progress } from "@/components/ui/progress"
@@ -17,6 +17,10 @@ import { useParams, useRouter } from "next/navigation"
 import { Navbar } from "./navbar"
 import { useSearch } from "@/hooks/use-search"
 import { useSetting } from "@/hooks/use-setting"
+import useSubscription from "@/hooks/use-subscription"
+import { useUser } from "@clerk/clerk-react"
+import { Id } from "@/convex/_generated/dataModel"
+import { Loader } from "@/components/ui/loader"
 
 export const Sidebar = () => {
     const router = useRouter()
@@ -24,12 +28,16 @@ export const Sidebar = () => {
     const params = useParams()
     const search = useSearch()
     const settings = useSetting()
+    const { user } = useUser()
 
     const createDocument = useMutation(api.document.createDocument)
 
+    const { isLoading, data } = useSubscription(user?.emailAddresses[0].emailAddress!)
     const sideBarRef = useRef<ElementRef<"div">>(null)
     const navbarRef = useRef<ElementRef<"div">>(null)
     const isResizing = useRef(false)
+
+    const documents = useQuery(api.document.getAllDocuments)
 
     const [isCollapsed, setIsCollapsed] = useState(isMobile)
     const [isResseting, setisResseting] = useState(false)
@@ -94,6 +102,10 @@ export const Sidebar = () => {
     }
 
     const onCreateDocument = () => {
+        if(documents?.length && documents.length >= 3 && data === "Free"){
+            toast.error("You can already create 3 documents in the free plan")
+            return
+        }
         const promise = createDocument({ title: "Untitle" }).then(res => router.push(`/documents/${res}`))
         toast.promise(promise, {
             loading: "Creating a new document..",
@@ -133,16 +145,27 @@ export const Sidebar = () => {
             <div className="absolute right-0 top-0 w-1 h-full cursor-e-resize bg-primary/10 opacity-0 group-hover:opacity-100 transition" onMouseDown={handleMauseDown}/>
 
             <div className="absolute bottom-0 px-2 bg-white/50 dark:bg-black/50 py-4 w-full">
-                <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-1 text-[13px]">
-                        <Rocket />
-                        <p className="opacity-70 font-bold">Free plan</p>
+                {isLoading ? (
+                    <div className="w-full flex items-center justify-center">
+                        <Loader size={"lg"}/>
                     </div>
+                ) : (
+                    <>
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-1 text-[13px]">
+                                <Rocket />
+                                <p className="opacity-70 font-bold">{data} plan</p>
+                            </div>
+                            {data === "Free" ? (
+                                <p className="text-[13px] opacity-70">{documents?.length}/3</p>
+                            ) : (
+                                <p className="text-[13px] opacity-70">{documents?.length}</p>
+                            )}
+                        </div>  
+                        <Progress className="mt-2" value={documents?.length && documents.length >= 3 ? 100 : (documents?.length || 0) * 33.33} />
+                    </>                  
+                )}
 
-                    <p className="text-[13px] opacity-70">{arr.length}/3</p>
-                </div>
-
-                <Progress className="mt-2" value={arr.length >= 3 ? 100 : arr.length * 33.33} />
             </div>
         </div>
 
